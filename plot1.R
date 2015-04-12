@@ -1,10 +1,20 @@
-newdataset<-read.table("household_power_consumption.txt", 
-                       header=TRUE,sep=";",
-                       colClasses=c("character","character",rep("numeric",7)),
-                       na="?")
+#assume the database file located at working directory
 
-dataset1<-subset(newdataset,Date=="1/2/2007")
-dataset2<-subset(newdataset,Date=="2/2/2007")
+#file name
+fn <- "household_power_consumption.txt"
 
-hist(dataset1$Global_active_power, col="red", main="Global Active Power" ,xlab="Global_active_power(kilowatts)")
-png(filename = "plot1.png", width = 480, height = 480)
+#column names
+colNames = c("date", "time", "globalActivePower", "globalReactivePower", "voltage", "globalIntensity", "subMetering1", "subMetering2", "subMetering3")
+colClasses = c("character", "character", rep("numeric",7) )
+
+#read file
+df <- read.table(fn, header=TRUE, sep=";", col.names=colNames, colClasses=colClasses, na.strings="?")
+
+#convert to Date type, then filter
+df$date = as.Date(df$date, format="%d/%m/%Y")
+df = df[df$date >= as.Date("2007-02-01") & df$date<=as.Date("2007-02-02"),]
+
+#plot and save graph
+png(filename="plot1.png", width=480, height=480, units="px")
+hist(df$globalActivePower, col="red", main="Global Active Power", xlab="Global Active Power (kilowatts)")
+dev.off()
